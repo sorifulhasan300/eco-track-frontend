@@ -1,9 +1,24 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Navbar() {
   const [aiOpen, setAiOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { user, isAuthenticated, isLoading, initialize, logout } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    router.push("/");
+  };
 
   return (
     <nav
@@ -42,20 +57,74 @@ export default function Navbar() {
           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
           All systems online
         </div>
-        <Link
-          href="/login"
-          className="text-slate-300 text-sm border border-white/10
-            rounded-lg px-4 py-1.5 hover:bg-white/5 transition-all"
-        >
-          Sign in
-        </Link>
-        <Link
-          href="/register"
-          className="bg-emerald-500 hover:bg-emerald-600 text-white text-sm
-            font-medium rounded-lg px-4 py-1.5 transition-all"
-        >
-          Get Started →
-        </Link>
+
+        {isLoading ? (
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-20 animate-pulse rounded-lg bg-white/10" />
+            <div className="h-8 w-28 animate-pulse rounded-lg bg-emerald-500/20" />
+          </div>
+        ) : isAuthenticated && user ? (
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex items-center gap-2 rounded-lg border border-white/10
+                bg-white/5 px-3 py-1.5 text-sm text-white hover:bg-white/10 transition-all"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-semibold text-xs">
+                {user.name?.charAt(0)?.toUpperCase() ||
+                  user.email.charAt(0).toUpperCase()}
+              </div>
+              <span className="max-w-[120px] truncate">{user.name || user.email}</span>
+              <svg
+                className={`h-4 w-4 text-slate-400 transition-transform ${menuOpen ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {menuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-white/10 bg-[#0f172a] shadow-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/5">
+                  <p className="text-sm font-medium text-white truncate">{user.name || user.email}</p>
+                  <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                </div>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <Link
+              href="/login"
+              className="text-slate-300 text-sm border border-white/10
+                rounded-lg px-4 py-1.5 hover:bg-white/5 transition-all"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white text-sm
+                font-medium rounded-lg px-4 py-1.5 transition-all"
+            >
+              Get Started →
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
