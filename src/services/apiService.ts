@@ -1,4 +1,5 @@
 import api from "./api";
+import { USER_ROLES } from "@/types/roles";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -12,7 +13,7 @@ export interface AuthResponse {
     id: string;
     email: string;
     name?: string;
-    role: string;
+    role: USER_ROLES;
   };
   token: string;
 }
