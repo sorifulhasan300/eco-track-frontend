@@ -31,6 +31,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
+ 
   {
     label: "Analytics",
     href: "/dashboard/analytics",
@@ -80,6 +81,7 @@ const navItems: NavItem[] = [
     icon: UserCheck,
     roles: [USER_ROLES.MANAGER],
   },
+
   {
     label: "My Tasks",
     href: "/dashboard/tasks",
@@ -116,6 +118,7 @@ export default function Sidebar({ role }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const filteredItems = navItems.filter((item) => item.roles.includes(role));
+  console.log(filteredItems);
 
   return (
     <>

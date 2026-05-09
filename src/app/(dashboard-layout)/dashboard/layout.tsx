@@ -56,9 +56,6 @@ export default function DashboardLayout({
         <Topbar userName={user.name || user.email} userEmail={user.email} />
 
         <main className="flex-1 overflow-y-auto p-6">
-          {role === USER_ROLES.ADMIN && admin}
-          {role === USER_ROLES.MANAGER && manager}
-          {role === USER_ROLES.STAFF && staff}
           {children}
         </main>
       </div>
