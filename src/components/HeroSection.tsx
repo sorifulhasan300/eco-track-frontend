@@ -154,7 +154,7 @@ export default function HeroSection() {
       />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-6 py-20 max-w-3xl mx-auto">
+      <div className="relative z-10 text-center px-6 py-20 max-w-6xl mx-auto">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-8">
           <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
           AI-Powered Supply Chain Platform

@@ -145,8 +145,6 @@ export default function Footer() {
           {[
             "Privacy policy",
             "Terms of service",
-            "Cookie settings",
-            "Sitemap",
           ].map((l) => (
             <Link
               key={l}
