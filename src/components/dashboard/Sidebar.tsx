@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   Truck,
+  ShoppingBag,
 } from "lucide-react";
 
 type NavItem = {
@@ -46,6 +47,12 @@ const navItems: NavItem[] = [
     label: "Suppliers",
     href: "/dashboard/suppliers",
     icon: Truck,
+    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER],
+  },
+  {
+    label: "My Orders",
+    href: "/dashboard/my-orders",
+    icon: ShoppingBag,
     roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER],
   },
   {

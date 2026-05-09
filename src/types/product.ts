@@ -117,3 +117,49 @@ export interface OrderResponse {
   meta: null | unknown;
   data: unknown;
 }
+
+export interface OrderItemDetail {
+  id: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  product: {
+    id: string;
+    title: string;
+    price: number;
+    category: string;
+  };
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  userId: string;
+  status: string;
+  totalAmount: number;
+  items: OrderItemDetail[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrdersMeta {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface OrdersResponse {
+  success: boolean;
+  message: string;
+  meta: OrdersMeta;
+  data: Order[];
+}
+
+export interface OrderQueryParams {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  sort?: string;
+  sortOrder?: "asc" | "desc";
+}

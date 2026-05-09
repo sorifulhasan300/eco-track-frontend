@@ -32,7 +32,7 @@ export function proxy(request: NextRequest) {
     }
 
     const adminOnlyPaths = ["/dashboard/users", "/dashboard/analytics", "/dashboard/settings"];
-    const managerOnlyPaths = ["/dashboard/reports", "/dashboard/staff-performance", "/dashboard/suppliers"];
+    const managerOnlyPaths = ["/dashboard/reports", "/dashboard/staff-performance", "/dashboard/suppliers", "/dashboard/my-orders"];
 
     if (role === "STAFF" && adminOnlyPaths.some((p) => request.nextUrl.pathname.startsWith(p))) {
       return NextResponse.redirect(new URL("/dashboard", request.url));

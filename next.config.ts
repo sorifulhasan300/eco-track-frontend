@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**", // এটি সব ডোমেইনকে সাপোর্ট করবে
+        hostname: "**", 
       },
       {
         protocol: "http",
-        hostname: "**", // যদি কোনো ইমেজ http থেকে আসে সেটির জন্যও
+        hostname: "**", 
       },
     ],
   },
