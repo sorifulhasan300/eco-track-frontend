@@ -36,10 +36,10 @@ const navItems: NavItem[] = [
     roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER, USER_ROLES.STAFF],
   },
   {
-    label: "Inventory",
-    href: "/dashboard/inventory",
+    label: "Product Manage",
+    href: "/dashboard/products",
     icon: Package,
-    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER, USER_ROLES.STAFF],
+    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER],
   },
   {
     label: "User Management",
