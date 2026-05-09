@@ -2,21 +2,28 @@ import Link from "next/link";
 
 const footerLinks = {
   Product: [
-    "AI Data Analyzer",
-    "Smart Recommendations",
-    "Auto Tagging",
-    "Content Generator",
-    "Dashboard",
-    "Integrations",
+    { label: "AI Data Analyzer", href: "#" },
+    { label: "Smart Recommendations", href: "#" },
+    { label: "Auto Tagging", href: "#" },
+    { label: "Content Generator", href: "#" },
+    { label: "Dashboard", href: "#" },
+    { label: "Integrations", href: "#" },
   ],
-  Company: ["About us", "Pricing", "Blog", "Careers", "Press kit", "Contact"],
+  Company: [
+    { label: "About us", href: "#" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Blog", href: "#" },
+    { label: "Careers", href: "#" },
+    { label: "Press kit", href: "#" },
+    { label: "Contact", href: "#" },
+  ],
   Developers: [
-    "Documentation",
-    "API Reference",
-    "Changelog",
-    "Status page",
-    "Open source",
-    "Support",
+    { label: "Documentation", href: "#" },
+    { label: "API Reference", href: "#" },
+    { label: "Changelog", href: "#" },
+    { label: "Status page", href: "#" },
+    { label: "Open source", href: "#" },
+    { label: "Support", href: "#" },
   ],
 };
 
@@ -69,12 +76,12 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {links.map((link) => (
-                <li key={link}>
+                <li key={link.label}>
                   <Link
-                    href="#"
+                    href={link.href}
                     className="text-[13px] text-slate-400 hover:text-white font-light transition-colors"
                   >
-                    {link}
+                    {link.label}
                   </Link>
                 </li>
               ))}

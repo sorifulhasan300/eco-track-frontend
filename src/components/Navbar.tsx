@@ -40,7 +40,7 @@ export default function Navbar() {
           { label: "Products", href: "/products" },
           { label: "AI Features", href: "#" },
           { label: "Platform", href: "#" },
-          { label: "Pricing", href: "#" },
+          { label: "Pricing", href: "/pricing" },
           { label: "Docs", href: "#" },
         ].map((item) => (
           <li key={item.label}>

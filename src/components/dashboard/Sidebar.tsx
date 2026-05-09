@@ -32,10 +32,10 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER, USER_ROLES.STAFF],
+    label: "Analytics",
+    href: "/dashboard/analytics",
+    icon: BarChart3,
+    roles: [USER_ROLES.ADMIN,USER_ROLES.MANAGER],
   },
   {
     label: "Product Manage",
@@ -67,18 +67,7 @@ const navItems: NavItem[] = [
     icon: Users,
     roles: [USER_ROLES.ADMIN],
   },
-  {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    icon: BarChart3,
-    roles: [USER_ROLES.ADMIN],
-  },
-  {
-    label: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-    roles: [USER_ROLES.ADMIN],
-  },
+
   {
     label: "Reports",
     href: "/dashboard/reports",

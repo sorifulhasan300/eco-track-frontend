@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { USER_ROLES } from "@/types/roles";
 import { Skeleton } from "@/components/ui/skeleton";
+import { redirect } from "next/navigation";
 
 export default function DashboardHomePage() {
   const user = useAuthStore((s) => s.user);
@@ -23,13 +24,6 @@ export default function DashboardHomePage() {
   }[user.role];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-white">{welcomeTitle}</h2>
-        <p className="text-sm text-slate-400 mt-1">
-          Welcome back, {user.name || user.email}. Here is your personalized dashboard view.
-        </p>
-      </div>
-    </div>
+    redirect("/dashboard/analytics")
   );
 }
