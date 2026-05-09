@@ -7,6 +7,7 @@ export function useProductsQuery(params: ProductQueryParams = {}) {
     queryKey: ["products", params],
     queryFn: () =>
       apiService.get<ProductResponse>("/product", params as Record<string, unknown>),
+    staleTime: 0,
   });
 }
 

@@ -8,8 +8,11 @@ export function useCreateOrder() {
   return useMutation<OrderResponse, Error, OrderPayload>({
     mutationFn: (data) =>
       apiService.post<OrderResponse>("/order/create", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      await queryClient.invalidateQueries({ queryKey: ["all-orders"] });
+      await queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+      await queryClient.refetchQueries({ queryKey: ["products"], type: "active" });
     },
   });
 }

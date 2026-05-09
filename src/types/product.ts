@@ -160,6 +160,19 @@ export interface OrderQueryParams {
   page?: number;
   limit?: number;
   searchTerm?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
   sort?: string;
   sortOrder?: "asc" | "desc";
+}
+
+export enum ORDER_STATUS {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
+
+export interface UpdateOrderStatusPayload {
+  status: ORDER_STATUS;
 }
