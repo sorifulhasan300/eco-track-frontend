@@ -19,6 +19,12 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       cookieAuth.removeToken();
     }
+
+    const backendMessage = error.response?.data?.message;
+    if (backendMessage) {
+      return Promise.reject(new Error(backendMessage));
+    }
+
     return Promise.reject(error);
   },
 );

@@ -1,3 +1,5 @@
+import { USER_ROLES } from "./roles";
+
 export interface ProductUser {
   name: string;
   email: string;
@@ -175,4 +177,47 @@ export enum ORDER_STATUS {
 
 export interface UpdateOrderStatusPayload {
   status: ORDER_STATUS;
+}
+
+export enum USER_STATUS {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export interface UserDetail {
+  id: string;
+  email: string;
+  name?: string;
+  role: USER_ROLES;
+  status: USER_STATUS;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UsersMeta {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface UsersResponse {
+  success: boolean;
+  message: string;
+  meta: UsersMeta;
+  data: UserDetail[];
+}
+
+export interface UserQueryParams {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  role?: string;
+  status?: string;
+  sort?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export interface ManageUserPayload {
+  status?: USER_STATUS;
+  role?: USER_ROLES;
 }
