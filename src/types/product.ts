@@ -61,9 +61,12 @@ export interface ProductQueryParams {
 export interface Supplier {
   id: string;
   name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
+  contact: string;
+  email: string;
+  category: string;
+  reliability: number;
+  basePrice: number;
+  deliveryTime: string;
 }
 
 export interface SupplierResponse {
@@ -71,4 +74,30 @@ export interface SupplierResponse {
   message: string;
   meta: null | unknown;
   data: Supplier[];
+}
+
+export interface SingleSupplierResponse {
+  success: boolean;
+  message: string;
+  meta: null | unknown;
+  data: Supplier;
+}
+
+export interface SupplierPayload {
+  name: string;
+  contact: string;
+  email: string;
+  category: string;
+  reliability: number;
+  basePrice: number;
+  deliveryTime: string;
+}
+
+export interface SupplierQueryParams {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  category?: string;
+  sort?: string;
+  sortOrder?: "asc" | "desc";
 }

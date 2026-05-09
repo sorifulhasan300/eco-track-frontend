@@ -19,6 +19,7 @@ import {
   ChevronDown,
   Menu,
   X,
+  Truck,
 } from "lucide-react";
 
 type NavItem = {
@@ -39,6 +40,12 @@ const navItems: NavItem[] = [
     label: "Product Manage",
     href: "/dashboard/products",
     icon: Package,
+    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER],
+  },
+  {
+    label: "Suppliers",
+    href: "/dashboard/suppliers",
+    icon: Truck,
     roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER],
   },
   {
