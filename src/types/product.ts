@@ -101,3 +101,19 @@ export interface SupplierQueryParams {
   sort?: string;
   sortOrder?: "asc" | "desc";
 }
+
+export interface OrderItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface OrderPayload {
+  items: OrderItem[];
+}
+
+export interface OrderResponse {
+  success: boolean;
+  message: string;
+  meta: null | unknown;
+  data: unknown;
+}

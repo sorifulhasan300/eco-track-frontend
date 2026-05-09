@@ -1,7 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**", // এটি সব ডোমেইনকে সাপোর্ট করবে
+      },
+      {
+        protocol: "http",
+        hostname: "**", // যদি কোনো ইমেজ http থেকে আসে সেটির জন্যও
+      },
+    ],
+  },
 };
 
 export default nextConfig;

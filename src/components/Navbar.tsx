@@ -35,14 +35,21 @@ export default function Navbar() {
 
       {/* Links */}
       <ul className="flex items-center gap-1">
-        {["Home", "AI Features", "Platform", "Pricing", "Docs"].map((item) => (
-          <li key={item}>
+        {[
+          { label: "Home", href: "/" },
+          { label: "Products", href: "/products" },
+          { label: "AI Features", href: "#" },
+          { label: "Platform", href: "#" },
+          { label: "Pricing", href: "#" },
+          { label: "Docs", href: "#" },
+        ].map((item) => (
+          <li key={item.label}>
             <Link
-              href="#"
+              href={item.href}
               className="text-slate-400 hover:text-white hover:bg-white/5
                 px-3 py-1.5 rounded-md text-sm transition-all"
             >
-              {item}
+              {item.label}
             </Link>
           </li>
         ))}
