@@ -182,6 +182,7 @@ export interface UpdateOrderStatusPayload {
 export enum USER_STATUS {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
+  BLOCKED = "BLOCKED",
 }
 
 export interface UserDetail {
