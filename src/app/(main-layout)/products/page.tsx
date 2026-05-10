@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 
@@ -17,6 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { useProductsQuery } from "@/hooks/useProductsQuery";
 import ProductCard from "@/components/module/product/ProductCard";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 import QuickOrderModal from "@/components/module/product/QuickOrderModal";
 import type { Product, ProductQueryParams } from "@/types/product";
 
@@ -25,7 +27,7 @@ function parseNumberParam(value: string | null, defaultValue: number): number {
   return Number.isNaN(n) || n < 1 ? defaultValue : n;
 }
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -45,6 +47,19 @@ export default function ProductsPage() {
 
   const [quickOrderProduct, setQuickOrderProduct] = useState<Product | null>(null);
   const [quickOrderOpen, setQuickOrderOpen] = useState(false);
+
+  const { isAuthenticated, isLoading: authLoading, initialize } = useAuthStore();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast.error("This page is protected");
+      router.replace("/login");
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   // Sync URL -> state on back/forward
   useEffect(() => {
@@ -95,7 +110,7 @@ export default function ProductsPage() {
   // Sync debounced search to URL
   useEffect(() => {
     updateUrl({ search: debouncedSearch || undefined, page: 1 });
-    setPage(1);
+    setPage(1); // eslint-disable-next-line react-hooks/set-state-in-effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
@@ -151,6 +166,14 @@ export default function ProductsPage() {
     setQuickOrderOpen(false);
     setQuickOrderProduct(null);
   }, []);
+
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#080f1e]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#080f1e] py-8 px-4 sm:px-8">
@@ -259,5 +282,21 @@ export default function ProductsPage() {
         />
       </div>
     </div>
+  );
+}
+
+function ProductsFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#080f1e]">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+    </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<ProductsFallback />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }
