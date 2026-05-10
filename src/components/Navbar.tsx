@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Navbar() {
@@ -9,6 +9,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, isLoading, initialize, logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     initialize();
@@ -38,7 +39,7 @@ export default function Navbar() {
         {[
           { label: "Home", href: "/" },
           { label: "Products", href: "/products" },
-          { label: "AI Features", href: "#" },
+          { label: "AI Features", href: "/ai-features" },
           { label: "Platform", href: "#" },
           { label: "Pricing", href: "/pricing" },
           { label: "Docs", href: "#" },
@@ -46,8 +47,11 @@ export default function Navbar() {
           <li key={item.label}>
             <Link
               href={item.href}
-              className="text-slate-400 hover:text-white hover:bg-white/5
-                px-3 py-1.5 rounded-md text-sm transition-all"
+              className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                pathname === item.href
+                  ? "text-emerald-400 bg-emerald-500/10"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
             >
               {item.label}
             </Link>
