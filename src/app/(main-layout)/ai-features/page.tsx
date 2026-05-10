@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   BrainCircuit,
@@ -13,121 +12,6 @@ import {
   Sparkles,
   ChevronRight,
 } from "lucide-react";
-
-/* ── Animated canvas background (same style as hero) ── */
-function AIBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const EM = "#10b981";
-    let animId: number;
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth * devicePixelRatio;
-      canvas.height = canvas.offsetHeight * devicePixelRatio;
-      ctx.scale(devicePixelRatio, devicePixelRatio);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const W = () => canvas.offsetWidth;
-    const H = () => canvas.offsetHeight;
-
-    const nodes = Array.from({ length: 24 }, () => ({
-      x: Math.random() * W(),
-      y: Math.random() * H(),
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      r: Math.random() * 2 + 1,
-      pulse: Math.random() * Math.PI * 2,
-      type: Math.random() > 0.75 ? "hub" : "node",
-    }));
-
-    const loop = () => {
-      ctx.fillStyle = "#080f1e";
-      ctx.fillRect(0, 0, W(), H());
-
-      // Hex grid
-      const size = 32;
-      ctx.save();
-      ctx.globalAlpha = 0.03;
-      ctx.strokeStyle = EM;
-      ctx.lineWidth = 0.5;
-      for (let r = 0; r < Math.ceil(H() / size) + 1; r++) {
-        for (let c = 0; c < Math.ceil(W() / size / 1.73) + 1; c++) {
-          const ox = c * size * 1.73 + (r % 2) * size * 0.87;
-          const oy = r * size * 1.5;
-          ctx.beginPath();
-          for (let k = 0; k < 6; k++) {
-            const a = (Math.PI / 180) * (60 * k - 30);
-            if (k === 0) {
-              ctx.moveTo(ox + size * Math.cos(a), oy + size * Math.sin(a));
-            } else {
-              ctx.lineTo(ox + size * Math.cos(a), oy + size * Math.sin(a));
-            }
-          }
-          ctx.closePath();
-          ctx.stroke();
-        }
-      }
-      ctx.restore();
-
-      // Network nodes
-      nodes.forEach((a, i) => {
-        a.x += a.vx;
-        a.y += a.vy;
-        if (a.x < 0 || a.x > W()) a.vx *= -1;
-        if (a.y < 0 || a.y > H()) a.vy *= -1;
-        a.pulse += 0.015;
-        nodes.slice(i + 1).forEach((b) => {
-          const d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 140) {
-            ctx.save();
-            ctx.globalAlpha = (1 - d / 140) * 0.12;
-            ctx.strokeStyle = EM;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-            ctx.restore();
-          }
-        });
-        const p = Math.sin(a.pulse) * 0.5 + 0.5;
-        const r = a.type === "hub" ? a.r * 2.2 : a.r;
-        if (a.type === "hub") {
-          ctx.save();
-          ctx.globalAlpha = 0.06 + p * 0.06;
-          ctx.strokeStyle = EM;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.arc(a.x, a.y, r + 6 + p * 5, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.restore();
-        }
-        ctx.save();
-        ctx.globalAlpha = 0.4 + p * 0.25;
-        ctx.fillStyle = a.type === "hub" ? EM : "#059669";
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, r, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      });
-
-      animId = requestAnimationFrame(loop);
-    };
-    loop();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
-}
 
 /* ── Data ── */
 const features = [
@@ -207,11 +91,8 @@ export default function AIFeaturesPage() {
   return (
     <div className="relative bg-[#080f1e] text-white">
       {/* ── Hero ── */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-        <AIBackground />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#080f1e]/50 via-transparent to-[#080f1e]" />
-
-        <div className="relative z-10 text-center px-6 py-24 max-w-5xl mx-auto">
+      <section className="relative border-b border-white/[0.06]">
+        <div className="max-w-5xl mx-auto px-6 py-20 text-center">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-6">
             <Sparkles className="h-3.5 w-3.5" />
             Artificial Intelligence

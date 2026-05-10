@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import EcoTrackLogo from "@/components/EcoTrackLogo";
 import { USER_ROLES } from "@/types/roles";
 import { Button } from "@/components/ui/button";
 import {
@@ -161,7 +162,7 @@ export default function Sidebar({ role }: SidebarProps) {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center gap-2.5 border-b border-emerald-500/10 px-5">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-lg" />
+            <EcoTrackLogo size={32} />
             <span className="font-bold text-lg tracking-tight text-white font-syne">
               Eco<span className="text-emerald-400">Track</span>
             </span>

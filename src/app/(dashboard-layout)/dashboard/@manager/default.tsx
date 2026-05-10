@@ -1,5 +1,4 @@
 function ManagerContent() {
-
   return  null
 }
 

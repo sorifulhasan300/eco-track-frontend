@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import EcoTrackLogo from "./EcoTrackLogo";
 
 export default function Navbar() {
   const [aiOpen, setAiOpen] = useState(false);
@@ -28,7 +29,7 @@ export default function Navbar() {
     >
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2.5">
-        <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-700 rounded-lg" />
+        <EcoTrackLogo size={32} />
         <span className="font-bold text-lg tracking-tight text-white font-syne">
           Eco<span className="text-emerald-400">Track</span>
         </span>
@@ -40,9 +41,10 @@ export default function Navbar() {
           { label: "Home", href: "/" },
           { label: "Products", href: "/products" },
           { label: "AI Features", href: "/ai-features" },
-          { label: "Platform", href: "#" },
+          { label: "Platform", href: "/platform" },
           { label: "Pricing", href: "/pricing" },
-          { label: "Docs", href: "#" },
+          { label: "Docs", href: "/docs" },
+          { label: "Contact", href: "/contact" },
         ].map((item) => (
           <li key={item.label}>
             <Link
