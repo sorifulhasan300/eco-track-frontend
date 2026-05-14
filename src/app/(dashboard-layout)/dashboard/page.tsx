@@ -12,7 +12,7 @@ export default function Dashboard() {
     return redirect("/dashboard/manager-analytics");
   }
   if (userRole === USER_ROLES.STAFF) {
-    return redirect("/dashboard/my-orders");
+    return redirect("/dashboard/staff-analytics");
   }
   return redirect("/");
 }

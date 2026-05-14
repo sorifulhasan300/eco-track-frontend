@@ -45,6 +45,12 @@ const navItems: NavItem[] = [
     roles: [USER_ROLES.MANAGER],
   },
   {
+    label: "My Analytics",
+    href: "/dashboard/staff-analytics",
+    icon: BarChart3,
+    roles: [USER_ROLES.STAFF],
+  },
+  {
     label: "Product Manage",
     href: "/dashboard/products",
     icon: Package,

@@ -127,3 +127,44 @@ export interface ManagerAnalyticsResponse {
   meta: null;
   data: ManagerAnalyticsData;
 }
+
+// Staff Analytics Types
+export interface StaffStatsCards {
+  totalOrders: number;
+  pendingOrders: number;
+  completedOrders: number;
+  totalProducts: number;
+  lowStockItems: number;
+}
+
+export interface StaffOrderByStatus {
+  status: string;
+  count: number;
+}
+
+export interface StaffBarChart {
+  ordersByStatus: StaffOrderByStatus[];
+}
+
+export interface StaffOrderTrend {
+  date: string;
+  orders: number;
+}
+
+export interface StaffGraphChart {
+  ordersTrend: StaffOrderTrend[];
+}
+
+export interface StaffAnalyticsData {
+  generatedAt: string;
+  statsCards: StaffStatsCards;
+  barChart: StaffBarChart;
+  graphChart: StaffGraphChart;
+}
+
+export interface StaffAnalyticsResponse {
+  success: true;
+  message: string;
+  meta: null;
+  data: StaffAnalyticsData;
+}
