@@ -3,7 +3,7 @@
 import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { SortingState, PaginationState } from "@tanstack/react-table";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Select } from "@/components/ui/select";
 
 import { useProductsQuery } from "@/hooks/useProductsQuery";
 import { useDeleteProduct } from "@/hooks/useProductMutations";
@@ -44,6 +45,10 @@ export default function ProductsPage() {
   const [category, setCategory] = useState(
     () => searchParams.get("category") || ""
   );
+  const [sortBy, setSortBy] = useState(() => searchParams.get("sortBy") || "title");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    () => (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
+  );
   const [sorting, setSorting] = useState<SortingState>(() => {
     const sort = searchParams.get("sort");
     const sortOrder = searchParams.get("sortOrder");
@@ -62,6 +67,8 @@ export default function ProductsPage() {
     setLimit(parseNumberParam(searchParams.get("limit"), 10));
     setSearch(searchParams.get("search") || "");
     setCategory(searchParams.get("category") || "");
+    setSortBy(searchParams.get("sortBy") || "title");
+    setSortOrder((searchParams.get("sortOrder") as "asc" | "desc") || "asc");
     const sort = searchParams.get("sort");
     const sortOrder = searchParams.get("sortOrder");
     setSorting(sort ? [{ id: sort, desc: sortOrder !== "asc" }] : []);
@@ -77,7 +84,9 @@ export default function ProductsPage() {
           value === undefined ||
           value === "" ||
           (key === "page" && value === 1) ||
-          (key === "limit" && value === 10)
+          (key === "limit" && value === 10) ||
+          (key === "sortBy" && value === "title") ||
+          (key === "sortOrder" && value === "asc")
         ) {
           current.delete(key);
         } else {
@@ -92,11 +101,38 @@ export default function ProductsPage() {
     [searchParams, router, pathname]
   );
 
+  // Sync search to URL and reset page
+  useEffect(() => {
+    updateUrl({ search: search || undefined, page: 1 });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  // Sync category to URL and reset page
+  useEffect(() => {
+    updateUrl({ category: category || undefined, page: 1 });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
+
+  // Sync sorting to URL and reset page
+  useEffect(() => {
+    updateUrl({
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
+      page: 1,
+    });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, sortOrder]);
+
   const params: ProductQueryParams = {
     page,
     limit,
     ...(search && { searchTerm: search }),
     ...(category && { category }),
+    ...(sortBy !== "title" && { sortBy }),
+    ...(sortOrder !== "asc" && { sortOrder }),
     ...(sorting.length > 0 && {
       sort: sorting[0].id,
       sortOrder: sorting[0].desc ? "desc" : "asc",
@@ -150,20 +186,46 @@ export default function ProductsPage() {
   const handleSearchChange = useCallback(
     (value: string) => {
       setSearch(value);
-      setPage(1);
-      updateUrl({ search: value || undefined, page: 1 });
     },
-    [updateUrl]
+    []
   );
 
   const handleCategoryChange = useCallback(
     (value: string) => {
       setCategory(value);
-      setPage(1);
-      updateUrl({ category: value || undefined, page: 1 });
     },
-    [updateUrl]
+    []
   );
+
+  const handleSortByChange = useCallback(
+    (value: string) => {
+      setSortBy(value);
+    },
+    []
+  );
+
+  const handleSortOrderChange = useCallback(
+    (value: "asc" | "desc") => {
+      setSortOrder(value);
+    },
+    []
+  );
+
+  const clearFilters = useCallback(() => {
+    setSearch("");
+    setCategory("");
+    setSortBy("title");
+    setSortOrder("asc");
+    setSorting([]);
+    setPage(1);
+    updateUrl({
+      search: undefined,
+      category: undefined,
+      sortBy: undefined,
+      sortOrder: undefined,
+      page: undefined,
+    });
+  }, [updateUrl]);
 
   const handleEdit = useCallback((productId: string) => {
     setEditProductId(productId);
@@ -221,8 +283,14 @@ export default function ProductsPage() {
         search={search}
         category={category}
         categories={categories}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
         onSearchChange={handleSearchChange}
         onCategoryChange={handleCategoryChange}
+        onSortByChange={handleSortByChange}
+        onSortOrderChange={handleSortOrderChange}
+        onClearFilters={clearFilters}
+        hasActiveFilters={!!(search || category || sortBy !== "title" || sortOrder !== "asc")}
       />
 
       <DataTable

@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { SortingState, PaginationState } from "@tanstack/react-table";
-import { Search, Filter, X } from "lucide-react";
+import { Search, X, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -56,7 +56,10 @@ export default function UsersManagementPage() {
   // Filters
   const [roleFilter, setRoleFilter] = useState(() => searchParams.get("role") || "");
   const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") || "");
-  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState(() => searchParams.get("sortBy") || "createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    () => (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+  );
 
   // Default sort: createdAt desc
   const [sorting, setSorting] = useState<SortingState>(() => {
@@ -85,6 +88,8 @@ export default function UsersManagementPage() {
     setDebouncedSearch(urlSearch);
     setRoleFilter(searchParams.get("role") || "");
     setStatusFilter(searchParams.get("status") || "");
+    setSortBy(searchParams.get("sortBy") || "createdAt");
+    setSortOrder((searchParams.get("sortOrder") as "asc" | "desc") || "desc");
     const sort = searchParams.get("sort");
     const sortOrder = searchParams.get("sortOrder");
     setSorting(sort ? [{ id: sort, desc: sortOrder !== "asc" }] : [{ id: "createdAt", desc: true }]);
@@ -108,7 +113,9 @@ export default function UsersManagementPage() {
           value === undefined ||
           value === "" ||
           (key === "page" && value === 1) ||
-          (key === "limit" && value === 10)
+          (key === "limit" && value === 10) ||
+          (key === "sortBy" && value === "createdAt") ||
+          (key === "sortOrder" && value === "desc")
         ) {
           current.delete(key);
         } else {
@@ -130,12 +137,39 @@ export default function UsersManagementPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
+  // Sync role filter to URL and reset page
+  useEffect(() => {
+    updateUrl({ role: roleFilter || undefined, page: 1 });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roleFilter]);
+
+  // Sync status filter to URL and reset page
+  useEffect(() => {
+    updateUrl({ status: statusFilter || undefined, page: 1 });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter]);
+
+  // Sync sorting to URL and reset page
+  useEffect(() => {
+    updateUrl({
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
+      page: 1,
+    });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, sortOrder]);
+
   const params: UserQueryParams = {
     page,
     limit,
     ...(debouncedSearch && { searchTerm: debouncedSearch }),
     ...(roleFilter && { role: roleFilter }),
     ...(statusFilter && { status: statusFilter }),
+    ...(sortBy !== "createdAt" && { sortBy }),
+    ...(sortOrder !== "desc" && { sortOrder }),
     ...(sorting.length > 0 && {
       sort: sorting[0].id,
       sortOrder: sorting[0].desc ? "desc" : "asc",
@@ -191,30 +225,48 @@ export default function UsersManagementPage() {
     (value: string) => {
       const cleanValue = value === "ALL" ? "" : value;
       setRoleFilter(cleanValue);
-      setPage(1);
-      updateUrl({ role: cleanValue || undefined, page: 1 });
     },
-    [updateUrl]
+    []
   );
 
   const handleStatusFilterChange = useCallback(
     (value: string) => {
       const cleanValue = value === "ALL" ? "" : value;
       setStatusFilter(cleanValue);
-      setPage(1);
-      updateUrl({ status: cleanValue || undefined, page: 1 });
     },
-    [updateUrl]
+    []
+  );
+
+  const handleSortByChange = useCallback(
+    (value: string) => {
+      setSortBy(value);
+    },
+    []
+  );
+
+  const handleSortOrderChange = useCallback(
+    (value: "asc" | "desc") => {
+      setSortOrder(value);
+    },
+    []
   );
 
   const clearFilters = useCallback(() => {
+    setSearch("");
+    setDebouncedSearch("");
     setRoleFilter("");
     setStatusFilter("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
+    setSorting([]);
     setPage(1);
     updateUrl({
+      search: undefined,
       role: undefined,
       status: undefined,
-      page: 1,
+      sortBy: undefined,
+      sortOrder: undefined,
+      page: undefined,
     });
   }, [updateUrl]);
 
@@ -287,8 +339,9 @@ export default function UsersManagementPage() {
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        <div className="relative max-w-sm flex-1">
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <Input
             placeholder="Search by name or email..."
@@ -298,66 +351,63 @@ export default function UsersManagementPage() {
           />
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowFilters((prev) => !prev)}
-          className={`border-emerald-500/20 text-white hover:bg-emerald-500/10 hover:text-emerald-300 ${
-            (roleFilter || statusFilter) ? "bg-emerald-500/20 border-emerald-500/40" : "bg-white/5"
-          }`}
-        >
-          <Filter className="h-4 w-4 mr-2" />
-          Filters
-          {(roleFilter || statusFilter) && (
-            <span className="ml-2 h-2 w-2 rounded-full bg-emerald-400" />
-          )}
-        </Button>
+        <Select value={roleFilter || "ALL"} onValueChange={handleRoleFilterChange}>
+          <SelectTrigger className="w-[180px] bg-transparent border-emerald-500/20 text-white">
+            <SlidersHorizontal className="mr-2 h-4 w-4 text-slate-500" />
+            <SelectValue placeholder="All Roles" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="ALL">All Roles</SelectItem>
+            <SelectItem value="ADMIN">Admin</SelectItem>
+            <SelectItem value="MANAGER">Manager</SelectItem>
+            <SelectItem value="STAFF">Staff</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={statusFilter || "ALL"} onValueChange={handleStatusFilterChange}>
+          <SelectTrigger className="w-[180px] bg-transparent border-emerald-500/20 text-white">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="ALL">All Status</SelectItem>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="INACTIVE">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={sortBy} onValueChange={handleSortByChange}>
+          <SelectTrigger className="w-[140px] bg-transparent border-emerald-500/20 text-white">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="createdAt">Date</SelectItem>
+            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="email">Email</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={sortOrder} onValueChange={handleSortOrderChange}>
+          <SelectTrigger className="w-[100px] bg-transparent border-emerald-500/20 text-white">
+            <SelectValue placeholder="Order" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="desc">Desc</SelectItem>
+            <SelectItem value="asc">Asc</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {(search || roleFilter || statusFilter || sortBy !== "createdAt" || sortOrder !== "desc") && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearFilters}
+            className="border-red-500/20 text-red-300 bg-red-500/5 hover:bg-red-500/10"
+          >
+            <X className="mr-2 h-4 w-4" />
+            Clear Filters
+          </Button>
+        )}
       </div>
-
-      {showFilters && (
-        <div className="flex flex-wrap gap-3 items-end p-4 rounded-lg border border-emerald-500/10 bg-white/[0.02]">
-          <div className="space-y-1.5 min-w-[160px]">
-            <Label className="text-xs text-slate-400">Role</Label>
-            <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
-              <SelectTrigger className="bg-transparent border-emerald-500/20 text-white h-9 w-[160px]">
-                <SelectValue placeholder="All Roles" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
-                <SelectItem value="ALL">All Roles</SelectItem>
-                <SelectItem value="ADMIN">ADMIN</SelectItem>
-                <SelectItem value="MANAGER">MANAGER</SelectItem>
-                <SelectItem value="STAFF">STAFF</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5 min-w-[160px]">
-            <Label className="text-xs text-slate-400">Status</Label>
-            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-              <SelectTrigger className="bg-transparent border-emerald-500/20 text-white h-9 w-[160px]">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
-                <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="ACTIVE">ACTIVE</SelectItem>
-                <SelectItem value="INACTIVE">INACTIVE</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {(roleFilter || statusFilter) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="text-slate-400 hover:text-white hover:bg-white/5 h-9"
-            >
-              <X className="h-3.5 w-3.5 mr-1" />
-              Clear
-            </Button>
-          )}
-        </div>
-      )}
 
       <DataTable
         columns={columns}

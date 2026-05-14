@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { SortingState, PaginationState } from "@tanstack/react-table";
-import { Search, Filter, X } from "lucide-react";
+import { Search, X, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -55,9 +55,10 @@ export default function OrdersManagementPage() {
 
   // Filters
   const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") || "");
-  const [startDate, setStartDate] = useState(() => searchParams.get("startDate") || "");
-  const [endDate, setEndDate] = useState(() => searchParams.get("endDate") || "");
-  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState(() => searchParams.get("sortBy") || "createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    () => (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+  );
 
   // Default sort: createdAt desc
   const [sorting, setSorting] = useState<SortingState>(() => {
@@ -84,8 +85,8 @@ export default function OrdersManagementPage() {
     setSearch(urlSearch);
     setDebouncedSearch(urlSearch);
     setStatusFilter(searchParams.get("status") || "");
-    setStartDate(searchParams.get("startDate") || "");
-    setEndDate(searchParams.get("endDate") || "");
+    setSortBy(searchParams.get("sortBy") || "createdAt");
+    setSortOrder((searchParams.get("sortOrder") as "asc" | "desc") || "desc");
     const sort = searchParams.get("sort");
     const sortOrder = searchParams.get("sortOrder");
     setSorting(sort ? [{ id: sort, desc: sortOrder !== "asc" }] : [{ id: "createdAt", desc: true }]);
@@ -109,7 +110,9 @@ export default function OrdersManagementPage() {
           value === undefined ||
           value === "" ||
           (key === "page" && value === 1) ||
-          (key === "limit" && value === 10)
+          (key === "limit" && value === 10) ||
+          (key === "sortBy" && value === "createdAt") ||
+          (key === "sortOrder" && value === "desc")
         ) {
           current.delete(key);
         } else {
@@ -131,13 +134,31 @@ export default function OrdersManagementPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
+  // Sync status to URL and reset page
+  useEffect(() => {
+    updateUrl({ status: statusFilter || undefined, page: 1 });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter]);
+
+  // Sync sorting to URL and reset page
+  useEffect(() => {
+    updateUrl({
+      sortBy: sortBy || undefined,
+      sortOrder: sortOrder || undefined,
+      page: 1,
+    });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, sortOrder]);
+
   const params: OrderQueryParams = {
     page,
     limit,
     ...(debouncedSearch && { searchTerm: debouncedSearch }),
     ...(statusFilter && { status: statusFilter }),
-    ...(startDate && { startDate }),
-    ...(endDate && { endDate }),
+    ...(sortBy !== "createdAt" && { sortBy }),
+    ...(sortOrder !== "desc" && { sortOrder }),
     ...(sorting.length > 0 && {
       sort: sorting[0].id,
       sortOrder: sorting[0].desc ? "desc" : "asc",
@@ -193,40 +214,38 @@ export default function OrdersManagementPage() {
     (value: string) => {
       const cleanValue = value === "ALL" ? "" : value;
       setStatusFilter(cleanValue);
-      setPage(1);
-      updateUrl({ status: cleanValue || undefined, page: 1 });
     },
-    [updateUrl]
+    []
   );
 
-  const handleStartDateChange = useCallback(
+  const handleSortByChange = useCallback(
     (value: string) => {
-      setStartDate(value);
-      setPage(1);
-      updateUrl({ startDate: value || undefined, page: 1 });
+      setSortBy(value);
     },
-    [updateUrl]
+    []
   );
 
-  const handleEndDateChange = useCallback(
-    (value: string) => {
-      setEndDate(value);
-      setPage(1);
-      updateUrl({ endDate: value || undefined, page: 1 });
+  const handleSortOrderChange = useCallback(
+    (value: "asc" | "desc") => {
+      setSortOrder(value);
     },
-    [updateUrl]
+    []
   );
 
   const clearFilters = useCallback(() => {
+    setSearch("");
+    setDebouncedSearch("");
     setStatusFilter("");
-    setStartDate("");
-    setEndDate("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
+    setSorting([]);
     setPage(1);
     updateUrl({
+      search: undefined,
       status: undefined,
-      startDate: undefined,
-      endDate: undefined,
-      page: 1,
+      sortBy: undefined,
+      sortOrder: undefined,
+      page: undefined,
     });
   }, [updateUrl]);
 
@@ -284,8 +303,9 @@ export default function OrdersManagementPage() {
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        <div className="relative max-w-sm flex-1">
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <Input
             placeholder="Search by order number or product name..."
@@ -295,72 +315,52 @@ export default function OrdersManagementPage() {
           />
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowFilters((prev) => !prev)}
-          className={`border-emerald-500/20 text-white hover:bg-emerald-500/10 hover:text-emerald-300 ${
-            (statusFilter || startDate || endDate) ? "bg-emerald-500/20 border-emerald-500/40" : "bg-white/5"
-          }`}
-        >
-          <Filter className="h-4 w-4 mr-2" />
-          Filters
-          {(statusFilter || startDate || endDate) && (
-            <span className="ml-2 h-2 w-2 rounded-full bg-emerald-400" />
-          )}
-        </Button>
+        <Select value={statusFilter || "ALL"} onValueChange={handleStatusFilterChange}>
+          <SelectTrigger className="w-[180px] bg-transparent border-emerald-500/20 text-white">
+            <SlidersHorizontal className="mr-2 h-4 w-4 text-slate-500" />
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="ALL">All Status</SelectItem>
+            <SelectItem value="PENDING">Pending</SelectItem>
+            <SelectItem value="COMPLETED">Completed</SelectItem>
+            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={sortBy} onValueChange={handleSortByChange}>
+          <SelectTrigger className="w-[140px] bg-transparent border-emerald-500/20 text-white">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="createdAt">Date</SelectItem>
+            <SelectItem value="totalAmount">Amount</SelectItem>
+            <SelectItem value="status">Status</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={sortOrder} onValueChange={handleSortOrderChange}>
+          <SelectTrigger className="w-[100px] bg-transparent border-emerald-500/20 text-white">
+            <SelectValue placeholder="Order" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+            <SelectItem value="desc">Desc</SelectItem>
+            <SelectItem value="asc">Asc</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {(search || statusFilter || sortBy !== "createdAt" || sortOrder !== "desc") && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearFilters}
+            className="border-red-500/20 text-red-300 bg-red-500/5 hover:bg-red-500/10"
+          >
+            <X className="mr-2 h-4 w-4" />
+            Clear Filters
+          </Button>
+        )}
       </div>
-
-      {showFilters && (
-        <div className="flex flex-wrap gap-3 items-end p-4 rounded-lg border border-emerald-500/10 bg-white/[0.02]">
-          <div className="space-y-1.5 min-w-[160px]">
-            <Label className="text-xs text-slate-400">Status</Label>
-            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-              <SelectTrigger className="bg-transparent border-emerald-500/20 text-white h-9 w-[160px]">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
-                <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="PENDING">PENDING</SelectItem>
-                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                <SelectItem value="CANCELLED">CANCELLED</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5 min-w-[160px]">
-            <Label className="text-xs text-slate-400">Start Date</Label>
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => handleStartDateChange(e.target.value)}
-              className="bg-transparent border-emerald-500/20 text-white h-9 w-[160px] [color-scheme:dark]"
-            />
-          </div>
-
-          <div className="space-y-1.5 min-w-[160px]">
-            <Label className="text-xs text-slate-400">End Date</Label>
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => handleEndDateChange(e.target.value)}
-              className="bg-transparent border-emerald-500/20 text-white h-9 w-[160px] [color-scheme:dark]"
-            />
-          </div>
-
-          {(statusFilter || startDate || endDate) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="text-slate-400 hover:text-white hover:bg-white/5 h-9"
-            >
-              <X className="h-3.5 w-3.5 mr-1" />
-              Clear
-            </Button>
-          )}
-        </div>
-      )}
 
       <DataTable
         columns={columns}
