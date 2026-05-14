@@ -35,7 +35,7 @@ export function useDeleteProduct() {
 
   return useMutation<SingleProductResponse, Error, string>({
     mutationFn: (id) =>
-      apiService.delete<SingleProductResponse>(`/product/${id}`),
+      apiService.delete<SingleProductResponse>(`/product/${id}/delete-product`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },

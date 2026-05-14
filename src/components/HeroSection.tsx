@@ -160,7 +160,7 @@ export default function HeroSection() {
           AI-Powered Supply Chain Platform
         </div>
 
-        <h1 className="font-syne text-5xl md:text-6xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">
+        <h1 className="font-syne text-3xl sm:text-5xl md:text-6xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">
           Smarter Inventory,
           <br />
           <span className="text-emerald-400">Zero Stockouts.</span>
@@ -189,7 +189,7 @@ export default function HeroSection() {
           </Link>
         </div>
 
-        <div className="inline-flex border border-white/8 rounded-xl bg-white/[0.03] backdrop-blur-xl overflow-hidden">
+        <div className="inline-flex flex-wrap justify-center border border-white/8 rounded-xl bg-white/[0.03] backdrop-blur-xl overflow-hidden">
           {[
             { num: "12k+", label: "Products tracked" },
             { num: "98%", label: "Stockout reduction" },
@@ -198,7 +198,7 @@ export default function HeroSection() {
           ].map((s, i, arr) => (
             <div
               key={s.label}
-              className={`px-6 py-3 text-center ${i < arr.length - 1 ? "border-r border-white/7" : ""}`}
+              className={`px-4 sm:px-6 py-3 text-center ${i < arr.length - 1 ? "border-r border-white/7" : ""}`}
             >
               <div className="font-syne text-xl font-bold text-emerald-400">
                 {s.num}

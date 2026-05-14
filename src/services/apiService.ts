@@ -29,6 +29,20 @@ export interface RegisterPayload {
   password: string;
 }
 
+export interface ProfileUpdatePayload {
+  name: string;
+  email: string;
+  image?: string;
+}
+
+export interface ProfileResponse {
+  id: string;
+  email: string;
+  name?: string;
+  role: USER_ROLES;
+  image?: string;
+}
+
 class ApiService {
   /* ── Auth ── */
   async login(payload: LoginPayload): Promise<AuthResponse> {
@@ -38,6 +52,17 @@ class ApiService {
 
   async register(payload: RegisterPayload): Promise<AuthResponse> {
     const response = await api.post<ApiResponse<AuthResponse>>("/auth/register", payload);
+    return response.data.data;
+  }
+
+  /* ── Profile ── */
+  async updateProfile(payload: ProfileUpdatePayload): Promise<ProfileResponse> {
+    const response = await api.patch<ApiResponse<ProfileResponse>>("/user/profile/update", payload);
+    return response.data.data;
+  }
+
+  async getProfile(): Promise<ProfileResponse> {
+    const response = await api.get<ApiResponse<ProfileResponse>>("/user/profile");
     return response.data.data;
   }
 

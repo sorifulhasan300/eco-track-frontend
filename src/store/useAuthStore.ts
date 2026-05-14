@@ -8,6 +8,7 @@ export interface User {
   email: string;
   name?: string;
   role: USER_ROLES;
+  image?: string;
 }
 
 interface AuthState {

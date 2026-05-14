@@ -32,12 +32,11 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
- 
   {
     label: "Analytics",
     href: "/dashboard/analytics",
     icon: BarChart3,
-    roles: [USER_ROLES.ADMIN,USER_ROLES.MANAGER],
+    roles: [USER_ROLES.ADMIN],
   },
   {
     label: "Product Manage",
@@ -55,7 +54,7 @@ const navItems: NavItem[] = [
     label: "My Orders",
     href: "/dashboard/my-orders",
     icon: ShoppingBag,
-    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER],
+    roles: [USER_ROLES.ADMIN, USER_ROLES.MANAGER,USER_ROLES.STAFF],
   },
   {
     label: "Orders Manage",
@@ -70,30 +69,31 @@ const navItems: NavItem[] = [
     roles: [USER_ROLES.ADMIN],
   },
 
-  {
-    label: "Reports",
-    href: "/dashboard/reports",
-    icon: FileText,
-    roles: [USER_ROLES.MANAGER],
-  },
-  {
-    label: "Staff Performance",
-    href: "/dashboard/staff-performance",
-    icon: UserCheck,
-    roles: [USER_ROLES.MANAGER],
-  },
+  // {
+  //   label: "Reports",
+  //   href: "/dashboard/reports",
+  //   icon: FileText,
+  //   roles: [USER_ROLES.MANAGER],
+  // },
+  // {
+  //   label: "Staff Performance",
+  //   href: "/dashboard/staff-performance",
+  //   icon: UserCheck,
+  //   roles: [USER_ROLES.MANAGER],
+  // },
 
-  {
-    label: "My Tasks",
-    href: "/dashboard/tasks",
-    icon: ClipboardList,
-    roles: [USER_ROLES.STAFF],
-  },
+  // {
+  //   label: "My Tasks",
+  //   href: "/dashboard/tasks",
+  //   icon: ClipboardList,
+  //   roles: [USER_ROLES.STAFF],
+  // },
+
   {
     label: "Profile",
     href: "/dashboard/profile",
     icon: UserCircle,
-    roles: [USER_ROLES.STAFF],
+    roles: [USER_ROLES.STAFF, USER_ROLES.MANAGER, USER_ROLES.ADMIN],
   },
 ];
 
@@ -156,7 +156,7 @@ export default function Sidebar({ role }: SidebarProps) {
           "bg-[#080f1e] border-r border-emerald-500/10",
           "transition-transform duration-300 ease-in-out",
           "lg:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex h-full flex-col">
@@ -182,7 +182,8 @@ export default function Sidebar({ role }: SidebarProps) {
           <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
             {filteredItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              const isActive =
+                pathname === item.href || pathname.startsWith(item.href + "/");
 
               return (
                 <Link
@@ -193,7 +194,7 @@ export default function Sidebar({ role }: SidebarProps) {
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                     isActive
                       ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20"
-                      : "text-slate-400 hover:bg-white/5 hover:text-white"
+                      : "text-slate-400 hover:bg-white/5 hover:text-white",
                   )}
                 >
                   <Icon className="size-4 shrink-0" />
@@ -205,9 +206,7 @@ export default function Sidebar({ role }: SidebarProps) {
 
           {/* Footer */}
           <div className="border-t border-emerald-500/10 px-4 py-3">
-            <p className="text-[11px] text-slate-500">
-              EcoTrack v1.0
-            </p>
+            <p className="text-[11px] text-slate-500">EcoTrack v1.0</p>
           </div>
         </div>
       </aside>

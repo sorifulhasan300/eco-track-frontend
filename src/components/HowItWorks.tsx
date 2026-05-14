@@ -23,13 +23,13 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="bg-[#080f1e] py-24 px-10">
+    <section className="bg-[#080f1e] py-24 px-4 sm:px-6 lg:px-10">
       <div className="text-center mb-16">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
           <i className="ti ti-route text-sm" aria-hidden="true" />
           Workflow
         </div>
-        <h2 className="font-syne text-4xl font-extrabold text-white tracking-tight mb-3">
+        <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
           From setup to <span className="text-emerald-400">smart insights</span>
         </h2>
         <p className="text-sm text-slate-400 font-light max-w-md mx-auto">
@@ -37,9 +37,9 @@ export default function HowItWorks() {
         </p>
       </div>
 
-      <div className="relative grid grid-cols-4 gap-0 max-w-6xl mx-auto">
+      <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-0 max-w-6xl mx-auto">
         {/* Connector line */}
-        <div className="absolute top-8 left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent z-0" />
+        <div className="hidden lg:block absolute top-8 left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent z-0" />
 
         {steps.map((step, i) => (
           <div key={step.title} className="relative z-10 text-center px-5 group">

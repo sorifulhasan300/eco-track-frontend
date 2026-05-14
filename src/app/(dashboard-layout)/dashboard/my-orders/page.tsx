@@ -147,7 +147,7 @@ export default function MyOrdersPage() {
   );
 
   // RBAC: Only ADMIN and MANAGER
-  const allowedRoles = [USER_ROLES.ADMIN, USER_ROLES.MANAGER];
+  const allowedRoles = [USER_ROLES.ADMIN, USER_ROLES.MANAGER,USER_ROLES.STAFF];
   const userRole = user?.role;
 
   if (!userRole || !allowedRoles.includes(userRole)) {

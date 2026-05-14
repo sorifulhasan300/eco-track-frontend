@@ -53,13 +53,13 @@ export const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="bg-slate-900 border-y border-white/5 py-24 px-10">
+    <section className="bg-slate-900 border-y border-white/5 py-24 px-4 sm:px-6 lg:px-10">
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
           <i className="ti ti-quote text-sm" aria-hidden="true" />
           Testimonials
         </div>
-        <h2 className="font-syne text-4xl font-extrabold text-white tracking-tight mb-3">
+        <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
           Teams that <span className="text-emerald-400">love EcoTrack</span>
         </h2>
         <p className="text-sm text-slate-400 font-light max-w-sm mx-auto">
@@ -67,7 +67,7 @@ export default function Testimonials() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-5 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
         {testimonials.map((t) => (
           <div
             key={t.name}

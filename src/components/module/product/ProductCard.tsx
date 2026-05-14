@@ -16,7 +16,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, onQuickOrder }: ProductCardProps) {
   const userRole = useAuthStore((s) => s.user?.role);
   const canQuickOrder =
-    userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.MANAGER;
+    userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.MANAGER || userRole === USER_ROLES.STAFF;
 
   const stockColor =
     product.stockLevel === 0

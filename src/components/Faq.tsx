@@ -33,13 +33,13 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="bg-[#080f1e] py-24 px-10">
+    <section className="bg-[#080f1e] py-24 px-4 sm:px-6 lg:px-10">
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
           <i className="ti ti-help-circle text-sm" aria-hidden="true" />
           FAQ
         </div>
-        <h2 className="font-syne text-4xl font-extrabold text-white tracking-tight mb-3">
+        <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
           Common <span className="text-emerald-400">questions answered</span>
         </h2>
         <p className="text-sm text-slate-400 font-light max-w-sm mx-auto">

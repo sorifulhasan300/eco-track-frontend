@@ -88,7 +88,7 @@ export default function LiveStats() {
   }, []);
 
   return (
-    <section className="bg-slate-900 border-y border-white/5 py-20 px-10 relative overflow-hidden">
+    <section className="bg-slate-900 border-y border-white/5 py-20 px-4 sm:px-6 lg:px-10 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
       <div className="text-center mb-12">
@@ -96,7 +96,7 @@ export default function LiveStats() {
           <i className="ti ti-activity text-sm" aria-hidden="true" />
           Platform activity
         </div>
-        <h2 className="font-syne text-4xl font-extrabold text-white tracking-tight mb-3">
+        <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
           Trusted by teams <span className="text-emerald-400">worldwide</span>
         </h2>
         <p className="text-sm text-slate-400 font-light">
@@ -106,7 +106,7 @@ export default function LiveStats() {
 
       <div
         ref={ref}
-        className="grid grid-cols-4 max-w-6xl mx-auto rounded-2xl overflow-hidden border border-white/6 divide-x divide-white/6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto rounded-2xl overflow-hidden border border-white/6 divide-x divide-white/6"
       >
         {stats.map((s, i) => (
           <StatCard key={s.label} {...s} active={active} delay={i * 200} />
