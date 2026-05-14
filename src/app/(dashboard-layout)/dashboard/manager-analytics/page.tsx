@@ -3,9 +3,9 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { USER_ROLES } from "@/types/roles";
 import { Skeleton } from "@/components/ui/skeleton";
-import AdminAnalyticsPage from "@/components/dashboard/analytics/AdminAnalytics";
+import ManagerAnalytics from "@/components/dashboard/analytics/ManagerAnalytics";
 
-export default function AdminAnalyticsPageRoute() {
+export default function ManagerAnalyticsPage() {
   const user = useAuthStore((s) => s.user);
 
   if (!user) {
@@ -17,8 +17,8 @@ export default function AdminAnalyticsPageRoute() {
     );
   }
 
-  if (user.role === USER_ROLES.ADMIN) {
-    return <AdminAnalyticsPage />;
+  if (user.role === USER_ROLES.MANAGER) {
+    return <ManagerAnalytics />;
   }
 
   return null;

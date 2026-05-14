@@ -54,7 +54,7 @@ export default function CategoryDistributionChart({
   const chartData = useMemo(
     () =>
       data.map((item) => ({
-        name: item.categoryName,
+        name: item.category,
         value: item.productCount,
       })),
     [data]
