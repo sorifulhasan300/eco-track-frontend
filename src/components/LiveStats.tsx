@@ -1,30 +1,31 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { Package, ShoppingCart, Building2, Brain, TrendingUp, BarChart3 } from "lucide-react";
 
 const stats = [
   {
-    icon: "ti-box",
+    icon: Package,
     value: 12,
     suffix: "k",
     label: "Products tracked",
     trend: "+18% this month",
   },
   {
-    icon: "ti-receipt",
+    icon: ShoppingCart,
     value: 2.4,
     suffix: "M",
     label: "Orders processed",
     trend: "+32% this month",
   },
   {
-    icon: "ti-users",
+    icon: Building2,
     value: 8,
     suffix: "k",
     label: "Active businesses",
     trend: "+9% this month",
   },
   {
-    icon: "ti-cpu",
+    icon: Brain,
     value: 1.2,
     suffix: "M",
     label: "AI insights generated",
@@ -51,13 +52,13 @@ function useCountUp(target: number, duration: number, active: boolean) {
 }
 
 function StatCard({
-  icon, value, suffix, label, trend, active, delay,
+  icon: Icon, value, suffix, label, trend, active, delay,
 }: (typeof stats)[0] & { active: boolean; delay: number }) {
   const count = useCountUp(value, 1800 + delay, active);
   return (
     <div className="bg-slate-900 p-8 text-center flex flex-col items-center gap-3">
       <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
-        <i className={`ti ${icon} text-xl`} aria-hidden="true" />
+        <Icon className="w-5 h-5" aria-hidden="true" />
       </div>
       <div>
         <div className="font-syne text-3xl font-extrabold text-white leading-none">
@@ -67,7 +68,7 @@ function StatCard({
         <div className="text-xs text-slate-500 mt-1">{label}</div>
       </div>
       <div className="inline-flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 rounded-full px-2.5 py-0.5">
-        <i className="ti ti-trending-up text-xs" aria-hidden="true" />
+        <TrendingUp className="w-3 h-3" aria-hidden="true" />
         {trend}
       </div>
     </div>
@@ -93,7 +94,7 @@ export default function LiveStats() {
 
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
-          <i className="ti ti-activity text-sm" aria-hidden="true" />
+          <BarChart3 className="w-4 h-4" aria-hidden="true" />
           Platform activity
         </div>
         <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">

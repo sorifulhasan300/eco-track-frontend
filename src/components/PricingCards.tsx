@@ -6,11 +6,11 @@ interface PricingCardProps {
   name: string;
   price: string;
   period: string;
-  icon: React.ElementType;
   description: string;
   features: string[];
   buttonText: string;
   popular: boolean;
+  iconType: "calendar" | "sparkles";
   onSubscribe: (planName: string) => void;
 }
 
@@ -18,13 +18,15 @@ export function PricingCard({
   name,
   price,
   period,
-  icon: Icon,
   description,
   features,
   buttonText,
   popular,
+  iconType,
   onSubscribe,
 }: PricingCardProps) {
+  const Icon = iconType === "calendar" ? Calendar : Sparkles;
+  
   return (
     <div
       className={`relative rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02] ${
@@ -42,8 +44,8 @@ export function PricingCard({
 
       {/* Plan Header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-          <Icon className="w-7 h-7 text-emerald-400" />
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4 text-emerald-400">
+          <Icon size={28} strokeWidth={1.5} />
         </div>
         <h3 className="font-syne text-2xl font-bold text-white mb-2">{name}</h3>
         <p className="text-slate-400 text-sm mb-4">{description}</p>
@@ -88,7 +90,7 @@ export default function PricingCards({ onSubscribe }: { onSubscribe: (planName: 
       name: "Monthly",
       price: "৳1,000",
       period: "/month",
-      icon: Calendar,
+      iconType: "calendar" as const,
       description: "Perfect for trying out EcoTrack or small teams",
       features: [
         "Up to 1,000 products",
@@ -105,7 +107,7 @@ export default function PricingCards({ onSubscribe }: { onSubscribe: (planName: 
       name: "Yearly",
       price: "৳10,000",
       period: "/year",
-      icon: Sparkles,
+      iconType: "sparkles" as const,
       description: "Best value for growing businesses and teams",
       features: [
         "Unlimited products",

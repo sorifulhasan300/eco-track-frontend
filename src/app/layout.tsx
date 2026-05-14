@@ -10,6 +10,10 @@ const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 export const metadata: Metadata = {
   title: "EcoTrack",
   description: "AI-Powered Supply Chain Platform",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

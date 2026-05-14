@@ -1,4 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
+import { Quote, Star } from "lucide-react";
+
 export const testimonials = [
   {
     text: "EcoTrack's AI flagged a stockout risk three weeks before it happened. We reordered in time and avoided $40k in lost sales. Genuinely impressive.",
@@ -56,7 +58,7 @@ export default function Testimonials() {
     <section className="bg-slate-900 border-y border-white/5 py-24 px-4 sm:px-6 lg:px-10">
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
-          <i className="ti ti-quote text-sm" aria-hidden="true" />
+          <Quote className="w-4 h-4" aria-hidden="true" />
           Testimonials
         </div>
         <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
@@ -90,7 +92,7 @@ export default function Testimonials() {
             {/* Stars */}
             <div className="flex gap-1 mb-4">
               {Array(5).fill(0).map((_, i) => (
-                <i key={i} className="ti ti-star text-amber-400 text-[13px]" aria-hidden="true" />
+                <Star key={i} className="w-3 h-3 text-amber-400 fill-amber-400" aria-hidden="true" />
               ))}
             </div>
 

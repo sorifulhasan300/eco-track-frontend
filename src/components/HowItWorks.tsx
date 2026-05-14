@@ -1,21 +1,23 @@
+import { Building2, Tag, BarChart3, Rocket, Route } from "lucide-react";
+
 const steps = [
   {
-    icon: "ti-building-store",
+    icon: Building2,
     title: "Connect your store",
     desc: "Link your existing inventory system or start fresh. Import products via CSV or our REST API in minutes.",
   },
   {
-    icon: "ti-tag",
+    icon: Tag,
     title: "AI auto-classifies",
     desc: "Gemini AI reads every product description and assigns categories, risk tags, and supplier recommendations automatically.",
   },
   {
-    icon: "ti-chart-bar",
+    icon: BarChart3,
     title: "Get live analytics",
     desc: "Your dashboard fills with real-time charts, low-stock alerts, and AI-generated business health summaries.",
   },
   {
-    icon: "ti-rocket",
+    icon: Rocket,
     title: "Act on insights",
     desc: "One-click purchase orders, AI-drafted supplier emails, and reorder suggestions sent straight to your team.",
   },
@@ -26,7 +28,7 @@ export default function HowItWorks() {
     <section className="bg-[#080f1e] py-24 px-4 sm:px-6 lg:px-10">
       <div className="text-center mb-16">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
-          <i className="ti ti-route text-sm" aria-hidden="true" />
+          <Route className="w-4 h-4" aria-hidden="true" />
           Workflow
         </div>
         <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
@@ -50,7 +52,7 @@ export default function HowItWorks() {
               <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white font-syne text-[10px] font-bold flex items-center justify-center">
                 {i + 1}
               </span>
-              <i className={`ti ${step.icon} text-2xl text-emerald-400`} aria-hidden="true" />
+              <step.icon className="w-6 h-6 text-emerald-400" aria-hidden="true" />
             </div>
             <h3 className="font-syne text-[15px] font-bold text-white mb-2">{step.title}</h3>
             <p className="text-[12.5px] text-slate-400 leading-relaxed font-light">{step.desc}</p>

@@ -62,10 +62,9 @@ function ProductsPageContent() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      toast.error("This page is protected");
-      router.replace("/login");
+      window.location.href = "/login";
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated]);
 
   // Sync URL -> state on back/forward
   useEffect(() => {

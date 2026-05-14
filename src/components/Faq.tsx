@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { HelpCircle, Plus } from "lucide-react";
 
 const faqs = [
   {
@@ -36,7 +37,7 @@ export default function FAQ() {
     <section className="bg-[#080f1e] py-24 px-4 sm:px-6 lg:px-10">
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium px-4 py-2 rounded-full mb-4">
-          <i className="ti ti-help-circle text-sm" aria-hidden="true" />
+          <HelpCircle className="w-4 h-4" aria-hidden="true" />
           FAQ
         </div>
         <h2 className="font-syne text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
@@ -68,8 +69,8 @@ export default function FAQ() {
                     : "bg-white/5 border-white/10 text-slate-400"
                 }`}
               >
-                <i
-                  className="ti ti-plus text-sm transition-transform duration-250"
+                <Plus
+                  className="w-4 h-4 transition-transform duration-250"
                   style={{ transform: open === i ? "rotate(45deg)" : "rotate(0deg)" }}
                   aria-hidden="true"
                 />
