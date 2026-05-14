@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, ShoppingCart } from "lucide-react";
+import { Package, ShoppingCart, Eye } from "lucide-react";
 import type { Product } from "@/types/product";
 import { useAuthStore } from "@/store/useAuthStore";
 import { USER_ROLES } from "@/types/roles";
@@ -11,9 +11,10 @@ import { USER_ROLES } from "@/types/roles";
 interface ProductCardProps {
   product: Product;
   onQuickOrder: (product: Product) => void;
+  onView: (productId: string) => void;
 }
 
-export default function ProductCard({ product, onQuickOrder }: ProductCardProps) {
+export default function ProductCard({ product, onQuickOrder, onView }: ProductCardProps) {
   const userRole = useAuthStore((s) => s.user?.role);
   const canQuickOrder =
     userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.MANAGER || userRole === USER_ROLES.STAFF;
@@ -74,16 +75,26 @@ export default function ProductCard({ product, onQuickOrder }: ProductCardProps)
             </Badge>
           </div>
 
-          {canQuickOrder && (
+          <div className="flex gap-2">
             <Button
-              onClick={() => onQuickOrder(product)}
-              disabled={product.stockLevel === 0}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white disabled:bg-slate-700 disabled:text-slate-400"
+              onClick={() => onView(product.id)}
+              variant="outline"
+              className="flex-1 border-emerald-500/20 text-white bg-white/5 hover:bg-white/10"
             >
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              Quick Order
+              <Eye className="mr-2 h-4 w-4" />
+              View
             </Button>
-          )}
+            {canQuickOrder && (
+              <Button
+                onClick={() => onQuickOrder(product)}
+                disabled={product.stockLevel === 0}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white disabled:bg-slate-700 disabled:text-slate-400"
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Quick Order
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

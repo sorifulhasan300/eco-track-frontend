@@ -44,6 +44,12 @@ function ProductsPageContent() {
   const [category, setCategory] = useState(
     () => searchParams.get("category") || ""
   );
+  const [sortBy, setSortBy] = useState(
+    () => searchParams.get("sortBy") || "createdAt"
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    () => (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+  );
 
   const [quickOrderProduct, setQuickOrderProduct] = useState<Product | null>(null);
   const [quickOrderOpen, setQuickOrderOpen] = useState(false);
@@ -67,11 +73,13 @@ function ProductsPageContent() {
     if (currentString === lastSyncedRef.current) return;
 
     setPage(parseNumberParam(searchParams.get("page"), 1));
-    setLimit(parseNumberParam(searchParams.get("limit"), 12));
+    setLimit(parseNumberParam(searchParams.get("limit"), 10));
     const urlSearch = searchParams.get("search") || "";
     setSearch(urlSearch);
     setDebouncedSearch(urlSearch);
     setCategory(searchParams.get("category") || "");
+    setSortBy(searchParams.get("sortBy") || "createdAt");
+    setSortOrder((searchParams.get("sortOrder") as "asc" | "desc") || "desc");
 
     lastSyncedRef.current = currentString;
   }, [searchParams]);
@@ -92,7 +100,9 @@ function ProductsPageContent() {
           value === undefined ||
           value === "" ||
           (key === "page" && value === 1) ||
-          (key === "limit" && value === 12)
+          (key === "limit" && value === 10) ||
+          (key === "sortBy" && value === "createdAt") ||
+          (key === "sortOrder" && value === "desc")
         ) {
           current.delete(key);
         } else {
@@ -109,23 +119,25 @@ function ProductsPageContent() {
 
   // Sync debounced search to URL
   useEffect(() => {
-    updateUrl({ search: debouncedSearch || undefined, page: 1 });
+    updateUrl({ searchTerm: debouncedSearch || undefined, page: 1 });
     setPage(1); // eslint-disable-next-line react-hooks/set-state-in-effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
   const params: ProductQueryParams = {
-    page,
-    limit,
+    ...(page !== 1 && { page }),
+    ...(limit !== 10 && { limit }),
     ...(debouncedSearch && { searchTerm: debouncedSearch }),
     ...(category && { category }),
+    ...(sortBy !== "createdAt" && { sortBy }),
+    ...(sortOrder !== "desc" && { sortOrder }),
   };
 
   const { data, isLoading } = useProductsQuery(params);
 
   const products = data?.data ?? [];
-  const meta = data?.meta ?? { page: 1, limit: 12, total: 0 };
-  const totalPages = Math.max(1, Math.ceil(meta.total / meta.limit));
+  const meta = data?.meta ?? { page: 1, limit: 10, total: 0 };
+  const totalPages = Math.max(1, Math.ceil(meta.total / (meta.limit || 10)));
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -149,6 +161,42 @@ function ProductsPageContent() {
     [updateUrl]
   );
 
+  const handleSortByChange = useCallback(
+    (value: string) => {
+      setSortBy(value);
+      setPage(1);
+      updateUrl({ sortBy: value, page: 1 });
+    },
+    [updateUrl]
+  );
+
+  const handleSortOrderChange = useCallback(
+    (value: "asc" | "desc") => {
+      setSortOrder(value);
+      setPage(1);
+      updateUrl({ sortOrder: value, page: 1 });
+    },
+    [updateUrl]
+  );
+
+  const handleClearFilters = useCallback(() => {
+    setSearch("");
+    setDebouncedSearch("");
+    setCategory("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
+    setPage(1);
+    setLimit(10);
+    updateUrl({
+      searchTerm: undefined,
+      category: undefined,
+      sortBy: undefined,
+      sortOrder: undefined,
+      page: undefined,
+      limit: undefined,
+    });
+  }, [updateUrl]);
+
   const handlePageChange = useCallback(
     (newPage: number) => {
       setPage(newPage);
@@ -166,6 +214,10 @@ function ProductsPageContent() {
     setQuickOrderOpen(false);
     setQuickOrderProduct(null);
   }, []);
+
+  const handleView = useCallback((productId: string) => {
+    router.push(`/product/${productId}`);
+  }, [router]);
 
   if (authLoading || !isAuthenticated) {
     return (
@@ -215,6 +267,45 @@ function ProductsPageContent() {
               ))}
             </SelectContent>
           </Select>
+
+          <Select
+            value={sortBy}
+            onValueChange={handleSortByChange}
+          >
+            <SelectTrigger className="w-[140px] bg-transparent border-emerald-500/20 text-white">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+              <SelectItem value="createdAt">Date</SelectItem>
+              <SelectItem value="title">Title</SelectItem>
+              <SelectItem value="price">Price</SelectItem>
+              <SelectItem value="stockLevel">Stock</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={sortOrder}
+            onValueChange={(val: "asc" | "desc") => handleSortOrderChange(val)}
+          >
+            <SelectTrigger className="w-[100px] bg-transparent border-emerald-500/20 text-white">
+              <SelectValue placeholder="Order" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-emerald-500/20 text-white">
+              <SelectItem value="desc">Desc</SelectItem>
+              <SelectItem value="asc">Asc</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {(search || category || sortBy !== "createdAt" || sortOrder !== "desc") && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClearFilters}
+              className="border-red-500/20 text-red-300 bg-red-500/5 hover:bg-red-500/10"
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
 
         {/* Product Grid */}
@@ -242,6 +333,7 @@ function ProductsPageContent() {
                 key={product.id}
                 product={product}
                 onQuickOrder={handleQuickOrder}
+                onView={handleView}
               />
             ))}
           </div>
@@ -249,28 +341,63 @@ function ProductsPageContent() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 pt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page <= 1 || isLoading}
-              className="border-emerald-500/20 text-white bg-white/5 hover:bg-white/10 disabled:opacity-50"
-            >
-              Previous
-            </Button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
             <span className="text-sm text-slate-400">
-              Page {page} of {totalPages}
+              Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, meta.total)} of {meta.total} products
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page >= totalPages || isLoading}
-              className="border-emerald-500/20 text-white bg-white/5 hover:bg-white/10 disabled:opacity-50"
-            >
-              Next
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page <= 1 || isLoading}
+                className="border-emerald-500/20 text-white bg-white/5 hover:bg-white/10 disabled:opacity-50"
+              >
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={page === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      disabled={isLoading}
+                      className={
+                        page === pageNum
+                          ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                          : "border-emerald-500/20 text-white bg-white/5 hover:bg-white/10 disabled:opacity-50"
+                      }
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page >= totalPages || isLoading}
+                className="border-emerald-500/20 text-white bg-white/5 hover:bg-white/10 disabled:opacity-50"
+              >
+                Next
+              </Button>
+            </div>
           </div>
         )}
 

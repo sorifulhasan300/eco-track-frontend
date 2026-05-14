@@ -56,7 +56,7 @@ export interface ProductQueryParams {
   limit?: number;
   searchTerm?: string;
   category?: string;
-  sort?: string;
+  sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
 
